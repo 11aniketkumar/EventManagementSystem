@@ -131,7 +131,8 @@ public class RegisterWindow extends JFrame {
         // Register action listener for the "Go Back to Login" link
         goBackLink.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                goBackToLogin();
+                dispose();
+                new LoginWindow().setVisible(true);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 goBackLink.setText("<html><u><font color='blue'>Go Back to Login</font></u></html>");
@@ -154,12 +155,6 @@ public class RegisterWindow extends JFrame {
             default:
                 return 0;
         }
-    }
-
-    private void goBackToLogin() {
-        // Close the current register window and show the login window
-        this.dispose();
-        new LoginWindow().setVisible(true);
     }
 }
 

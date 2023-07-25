@@ -64,8 +64,8 @@ class LoginWindow extends JFrame {
                 String inputPassword = new String(password.getPassword());
         
                 if (ValidationManager.validateLogin(inputUsername, inputPassword)) {
-                    JOptionPane.showMessageDialog(LoginWindow.this, "Login successful!");
                     dispose();
+                    new EventWindow().setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(LoginWindow.this, "Invalid username or password.");
                 }
@@ -76,7 +76,8 @@ class LoginWindow extends JFrame {
         // Handle the click event for the register link
         registerLink.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                showRegistrationWindow();
+                dispose();
+                new RegisterWindow().setVisible(true);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 registerLink.setText("<html><u><font color='blue'>Register Now</font></u></html>");
@@ -85,10 +86,5 @@ class LoginWindow extends JFrame {
                 registerLink.setText("<html><u>Register Now</u></html>");
             }
         });
-    }
-
-    private void showRegistrationWindow() {
-        this.dispose();
-        new RegisterWindow().setVisible(true);
     }
 }

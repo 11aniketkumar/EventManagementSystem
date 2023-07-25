@@ -8,7 +8,7 @@ public class create_table {
             Statement stmt = con.createStatement();
 
             // Create user table
-            String userTableQuery = "CREATE TABLE user (" +
+            String userTableQuery = "CREATE TABLE IF NOT EXISTS user (" +
                     "id int NOT NULL AUTO_INCREMENT," +
                     "USN varchar(10) NOT NULL," +
                     "name varchar(30) NOT NULL," +
@@ -20,12 +20,11 @@ public class create_table {
             stmt.executeUpdate(userTableQuery);
 
             // Create event table
-            String eventTableQuery = "CREATE TABLE event (" +
+            String eventTableQuery = "CREATE TABLE IF NOT EXISTS event (" +
                     "e_id int NOT NULL AUTO_INCREMENT," +
                     "e_name varchar(100) NOT NULL," +
                     "datetime datetime NOT NULL," +
                     "venue varchar(100) NOT NULL," +
-                    "image varchar(100)," +
                     "description varchar(500)," +
                     "registered int," +
                     "PRIMARY KEY (e_id)" +
@@ -33,7 +32,7 @@ public class create_table {
             stmt.executeUpdate(eventTableQuery);
 
             // Create registered table without event columns
-            String registeredTableQuery = "CREATE TABLE registered (" +
+            String registeredTableQuery = "CREATE TABLE IF NOT EXISTS registered (" +
                     "user_id int NOT NULL," +
                     "PRIMARY KEY (user_id)," +
                     "FOREIGN KEY (user_id) REFERENCES user(id)" +
@@ -41,7 +40,7 @@ public class create_table {
             stmt.executeUpdate(registeredTableQuery);
 
             // Create feedback table without event columns
-            String feedbackTableQuery = "CREATE TABLE feedback (" +
+            String feedbackTableQuery = "CREATE TABLE IF NOT EXISTS feedback (" +
                     "user_id int NOT NULL," +
                     "PRIMARY KEY (user_id)," +
                     "FOREIGN KEY (user_id) REFERENCES user(id)" +
