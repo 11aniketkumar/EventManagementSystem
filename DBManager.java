@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.w3c.dom.events.Event;
+// import org.w3c.dom.events.Event;
 
 public class DBManager {
 
@@ -53,10 +53,10 @@ public class DBManager {
         List<EventObj> eventsList = new ArrayList<>();
         try (Connection connection = MyConnection.getConnection();
              Statement statement = connection.createStatement()) {
-    
+
             String query = "SELECT * FROM event";
             ResultSet resultSet = statement.executeQuery(query);
-    
+
             while (resultSet.next()) {
                 int eventId = resultSet.getInt("e_id");
                 String eventName = resultSet.getString("e_name");
@@ -64,16 +64,16 @@ public class DBManager {
                 String eventVenue = resultSet.getString("venue");
                 String eventDescription = resultSet.getString("description");
                 int numRegistrations = resultSet.getInt("registered");
-    
+
                 EventObj event = new EventObj(eventId, eventName, eventDate, eventVenue, eventDescription, numRegistrations);
                 eventsList.add(event);
             }
-    
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    
+
         return eventsList;
-    }    
+    }
 
 }

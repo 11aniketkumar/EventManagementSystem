@@ -7,6 +7,7 @@ public class Main {
                 // new LoginWindow().setVisible(true);
                 // new RegisterWindow().setVisible(true);
                 new EventWindow().setVisible(true);
+                // new AdminEventWindow().setVisible(true);
             }
         });
     }

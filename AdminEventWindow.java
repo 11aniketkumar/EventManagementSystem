@@ -5,15 +5,15 @@ import java.awt.event.ActionListener;
 // import java.sql.SQLException;
 import java.util.List;
 
-public class EventWindow extends JFrame {
-    public EventWindow() {
-        setTitle("Tech-GO");
+public class AdminEventWindow extends JFrame {
+    public AdminEventWindow() {
+        setTitle("Tech-GO (Admin)");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Create the navigation bar (sidebar)
-        JPanel sidebar = createSidebar();
+        JPanel sidebar = createAdminSidebar();
 
         // Create the event sections
         JPanel eventSections = createEventSections();
@@ -26,7 +26,7 @@ public class EventWindow extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    private JPanel createSidebar() {
+    private JPanel createAdminSidebar() {
         JPanel sidebar = new JPanel();
         sidebar.setBackground(new Color(240, 240, 240)); // Light gray background
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS)); // Use Y_AXIS alignment
@@ -38,7 +38,7 @@ public class EventWindow extends JFrame {
         sidebar.add(heading);
 
         JButton homeBtn = createButton("Home");
-        JButton registeredBtn = createButton("Registered");
+        JButton newEventBtn = createButton("New Event"); // Add "New Event" button
         JButton logoutBtn = createButton("Log Out");
 
         // Add empty panel to create space below logout button
@@ -48,8 +48,16 @@ public class EventWindow extends JFrame {
         // Set the maximum width of each button to the width of the sidebar
         Dimension maxButtonSize = new Dimension(sidebar.getPreferredSize().width, 50);
         homeBtn.setMaximumSize(maxButtonSize);
-        registeredBtn.setMaximumSize(maxButtonSize);
+        newEventBtn.setMaximumSize(maxButtonSize); // Set maximum size for "New Event" button
         logoutBtn.setMaximumSize(maxButtonSize);
+
+        // Add action listener for "New Event" button
+        newEventBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Add the logic to open a new event creation window here
+            }
+        });
 
         logoutBtn.addActionListener(new ActionListener() {
             @Override
@@ -60,12 +68,13 @@ public class EventWindow extends JFrame {
         });
 
         sidebar.add(homeBtn);
-        sidebar.add(registeredBtn);
+        sidebar.add(newEventBtn); // Add "New Event" button to the sidebar
         sidebar.add(logoutBtn);
         sidebar.add(emptyPanel);
 
         return sidebar;
     }
+
 
     private JButton createButton(String text) {
         JButton button = new JButton(text);

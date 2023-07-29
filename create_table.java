@@ -3,9 +3,8 @@ import java.sql.Statement;
 
 public class create_table {
     public static void main(String[] args) {
-        try {
-            Connection con = MyConnection.getConnection();
-            Statement stmt = con.createStatement();
+        try(Connection con = MyConnection.getConnection();
+            Statement stmt = con.createStatement();) {
 
             // Create user table
             String userTableQuery = "CREATE TABLE IF NOT EXISTS user (" +

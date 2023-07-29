@@ -17,6 +17,28 @@ public class EventObj {
         this.numRegistrations = numRegistrations;
     }
 
-    // Add getters and setters for each field
-    // For brevity, I'm not including them in this example.
+    // Getter methods
+    public int getEventId() {
+        return eventId;
+    }
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public Date getEventDate() {
+        return eventDate;
+    }
+
+    public String getEventVenue() {
+        return eventVenue;
+    }
+
+    public String getEventDescription() {
+        return eventDescription;
+    }
+
+    public int getNumRegistrations() {
+        return numRegistrations;
+    }
 }
