@@ -63,14 +63,21 @@ class LoginWindow extends JFrame {
                 String inputUsername = username.getText();
                 String inputPassword = new String(password.getPassword());
         
-                if (ValidationManager.validateLogin(inputUsername, inputPassword)) {
+                UserInfo userInfo = ValidationManager.validateLogin(inputUsername, inputPassword);
+                if (userInfo != null) {
                     dispose();
-                    new EventWindow().setVisible(true);
+                    if (userInfo.getAccessLevel() == 1) {
+                        new EventWindow(userInfo).setVisible(true);
+                    } else {
+                        new AdminEventWindow(userInfo).setVisible(true);
+                    }
                 } else {
                     JOptionPane.showMessageDialog(LoginWindow.this, "Invalid username or password.");
                 }
             }
         });
+        
+        
         
 
         // Handle the click event for the register link

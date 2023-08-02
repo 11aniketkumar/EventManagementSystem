@@ -25,7 +25,7 @@ public class create_table {
                     "datetime datetime NOT NULL," +
                     "venue varchar(100) NOT NULL," +
                     "description varchar(500)," +
-                    "registered int," +
+                    "registered int DEFAULT 0," +
                     "PRIMARY KEY (e_id)" +
                     ");";
             stmt.executeUpdate(eventTableQuery);

@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 public class EventWindow extends JFrame {
-    public EventWindow() {
+    public EventWindow(UserInfo userInfo) {
         setTitle("Tech-GO");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -4,10 +4,11 @@ public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                // new LoginWindow().setVisible(true);
+                new LoginWindow().setVisible(true);
                 // new RegisterWindow().setVisible(true);
-                new EventWindow().setVisible(true);
+                // new EventWindow().setVisible(true);
                 // new AdminEventWindow().setVisible(true);
+                // new NewEventWindow().setVisible(true);
             }
         });
     }

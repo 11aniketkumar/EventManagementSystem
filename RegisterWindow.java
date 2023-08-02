@@ -149,11 +149,11 @@ public class RegisterWindow extends JFrame {
             case "Student":
                 return 1;
             case "Coordinator":
-                return 2;
-            case "Faculty":
-                return 3;
-            default:
                 return 0;
+            case "Faculty":
+                return 0;
+            default:
+                return 1;
         }
     }
 }
