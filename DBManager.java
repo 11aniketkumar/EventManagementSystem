@@ -233,5 +233,65 @@ public class DBManager {
         }
         return 0;
     }
+
+    public static List<EventObj> getRegisteredEvents(int userId) {
+        List<EventObj> eventsList = new ArrayList<>();
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     "SELECT * FROM event WHERE e_id IN (SELECT e_id FROM registered WHERE user_id = ? AND (e_1 = 1 OR e_2 = 1 OR e_3 = 1))")) {
+    
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+    
+            while (resultSet.next()) {
+                int eventId = resultSet.getInt("e_id");
+                String eventName = resultSet.getString("e_name");
+                Date eventDate = resultSet.getDate("datetime");
+                String eventVenue = resultSet.getString("venue");
+                String eventDescription = resultSet.getString("description");
+                int numRegistrations = resultSet.getInt("registered");
+    
+                EventObj event = new EventObj(eventId, eventName, eventDate, eventVenue, eventDescription, numRegistrations);
+                eventsList.add(event);
+            }
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return eventsList;
+    }
+    
+
+    public static boolean unregisterEvent(int eventId, int userId) {
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     "UPDATE registered SET e_" + eventId + " = 0 WHERE user_id = ?")) {
+
+            statement.setInt(1, userId);
+
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                // Update the registered count in the event table
+                int currentRegistrationCount = getEventRegistrationCount(eventId);
+                try (PreparedStatement updateStatement = connection.prepareStatement(
+                        "UPDATE event SET registered = ? WHERE e_id = ?")) {
+
+                    updateStatement.setInt(1, currentRegistrationCount - 1);
+                    updateStatement.setInt(2, eventId);
+                    updateStatement.executeUpdate();
+                }
+
+                return true;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     
 }

@@ -4,10 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class EventWindow extends JFrame {
+public class RegisteredWindow extends JFrame {
     private UserInfo userInfo;
 
-    public EventWindow(UserInfo userInfo) {
+    public RegisteredWindow(UserInfo userInfo) {
         this.userInfo = userInfo;
         setTitle("Tech-GO");
         setSize(1000, 700);
@@ -53,11 +53,11 @@ public class EventWindow extends JFrame {
         registeredBtn.setMaximumSize(maxButtonSize);
         logoutBtn.setMaximumSize(maxButtonSize);
 
-        registeredBtn.addActionListener(new ActionListener() {
+        homeBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose(); // Close the current window
-                new RegisteredWindow(userInfo).setVisible(true); // Pass userInfo to the AdminEventWindow
+                new EventWindow(userInfo).setVisible(true); // Pass userInfo to the AdminEventWindow
             }
         });
 
@@ -92,11 +92,11 @@ public class EventWindow extends JFrame {
         eventSections.setLayout(new GridLayout(0, 1));
         eventSections.setBackground(new Color(240, 240, 240)); // Light gray background
 
-        // Retrieve all events from the database using DBManager.getAllEvents()
-        List<EventObj> eventsList = DBManager.getAllEvents();
+        // Retrieve registered events for the current user
+        List<EventObj> registeredEventsList = DBManager.getRegisteredEvents(userInfo.getId());
 
         // Add event sections dynamically
-        for (EventObj event : eventsList) {
+        for (EventObj event : registeredEventsList) {
             JPanel eventSection = createEventSection(event);
             eventSections.add(eventSection);
         }
@@ -131,32 +131,50 @@ public class EventWindow extends JFrame {
         eventDetailsTextArea.setFont(new Font("Arial", Font.PLAIN, 16));
         eventDetailsTextArea.setEditable(false);
 
-        JButton registerBtn = new JButton("Register");
-        registerBtn.setFont(new Font("Arial", Font.BOLD, 20));
-        registerBtn.setFocusPainted(false);
-
-        // Check if the user is already registered for this event and disable the "Register" button
+        JButton actionButton;
         int eventId = event.getEventId();
         int userId = userInfo.getId();
-        if (DBManager.isUserRegistered(eventId, userId)) {
-            registerBtn.setEnabled(false);
-        }
 
-        registerBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean isRegistered = DBManager.registerEvent(eventId, userId);
-        
-                if (isRegistered) {
-                    int newRegistrationCount = numRegistrations + 1;
-                    numRegistrationsLabel.setText("No. of Registrations: " + newRegistrationCount);
-                    registerBtn.setEnabled(false);
-                    JOptionPane.showMessageDialog(EventWindow.this, "You have successfully registered for this event!");
-                } else {
-                    JOptionPane.showMessageDialog(EventWindow.this, "Error occurred while registering for the event.");
+        // Check if the user is already registered for this event
+        if (DBManager.isUserRegistered(eventId, userId)) {
+            actionButton = new JButton("Unregister");
+            actionButton.setFont(new Font("Arial", Font.BOLD, 20));
+            actionButton.setFocusPainted(false);
+            actionButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    boolean isUnregistered = DBManager.unregisterEvent(eventId, userId);
+                    if (isUnregistered) {
+                        int newRegistrationCount = numRegistrations - 1;
+                        numRegistrationsLabel.setText("No. of Registrations: " + newRegistrationCount);
+                        actionButton.setEnabled(false);
+                        JOptionPane.showMessageDialog(RegisteredWindow.this, "You have successfully unregistered from this event!");
+                    } else {
+                        JOptionPane.showMessageDialog(RegisteredWindow.this, "Error occurred while unregistering from the event.");
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            actionButton = new JButton("Register");
+            actionButton.setFont(new Font("Arial", Font.BOLD, 20));
+            actionButton.setFocusPainted(false);
+            actionButton.setEnabled(false); // The "Register" button is disabled by default for events that are not registered
+            actionButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    boolean isRegistered = DBManager.registerEvent(eventId, userId);
+                    if (isRegistered) {
+                        int newRegistrationCount = numRegistrations + 1;
+                        numRegistrationsLabel.setText("No. of Registrations: " + newRegistrationCount);
+                        actionButton.setText("Unregister"); // Change the button text to "Unregister" after successful registration
+                        actionButton.setEnabled(true);
+                        JOptionPane.showMessageDialog(RegisteredWindow.this, "You have successfully registered for this event!");
+                    } else {
+                        JOptionPane.showMessageDialog(RegisteredWindow.this, "Error occurred while registering for the event.");
+                    }
+                }
+            });
+        }
 
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridLayout(4, 1));
@@ -171,7 +189,7 @@ public class EventWindow extends JFrame {
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BorderLayout());
-        bottomPanel.add(registerBtn, BorderLayout.SOUTH);
+        bottomPanel.add(actionButton, BorderLayout.SOUTH);
 
         eventSection.add(eventInfoPanel, BorderLayout.NORTH);
         eventSection.add(eventDetailsTextArea, BorderLayout.CENTER);
@@ -179,5 +197,4 @@ public class EventWindow extends JFrame {
 
         return eventSection;
     }
-
 }
