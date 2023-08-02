@@ -144,29 +144,29 @@ public class AdminEventWindow extends JFrame {
         eventDetailsTextArea.setFont(new Font("Arial", Font.PLAIN, 16));
         eventDetailsTextArea.setEditable(false);
 
-        JButton registerBtn = new JButton("Register");
-        registerBtn.setFont(new Font("Arial", Font.BOLD, 20));
-        registerBtn.setFocusPainted(false);
+        JButton removeBtn = new JButton("Remove");
+        removeBtn.setFont(new Font("Arial", Font.BOLD, 20));
+        removeBtn.setFocusPainted(false);
 
-        // Check if the user is already registered for this event and disable the "Register" button
-        int eventId = event.getEventId();
-        int userId = userInfo.getId();
-        if (DBManager.isUserRegistered(eventId, userId)) {
-            registerBtn.setEnabled(false);
-        }
-
-        registerBtn.addActionListener(new ActionListener() {
+        removeBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                boolean isRegistered = DBManager.registerEvent(eventId, userId);
-        
-                if (isRegistered) {
-                    int newRegistrationCount = numRegistrations + 1;
-                    numRegistrationsLabel.setText("No. of Registrations: " + newRegistrationCount);
-                    registerBtn.setEnabled(false);
-                    JOptionPane.showMessageDialog(AdminEventWindow.this, "You have successfully registered for this event!");
-                } else {
-                    JOptionPane.showMessageDialog(AdminEventWindow.this, "Error occurred while registering for the event.");
+                int eventId = event.getEventId();
+                int option = JOptionPane.showConfirmDialog(AdminEventWindow.this, "Are you sure you want to remove this event?",
+                        "Confirm Removal", JOptionPane.YES_NO_OPTION);
+    
+                if (option == JOptionPane.YES_OPTION) {
+                    boolean isRemoved = DBManager.removeEvent(eventId);
+    
+                    if (isRemoved) {
+                        // Remove the event section from the UI
+                        eventSection.remove(eventSection);
+                        eventSection.revalidate();
+                        eventSection.repaint();
+                        JOptionPane.showMessageDialog(AdminEventWindow.this, "Event removed successfully!");
+                    } else {
+                        JOptionPane.showMessageDialog(AdminEventWindow.this, "Error occurred while removing the event.");
+                    }
                 }
             }
         });
@@ -184,7 +184,7 @@ public class AdminEventWindow extends JFrame {
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BorderLayout());
-        bottomPanel.add(registerBtn, BorderLayout.SOUTH);
+        bottomPanel.add(removeBtn, BorderLayout.SOUTH);
 
         eventSection.add(eventInfoPanel, BorderLayout.NORTH);
         eventSection.add(eventDetailsTextArea, BorderLayout.CENTER);

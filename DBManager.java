@@ -293,5 +293,30 @@ public class DBManager {
         }
         return false;
     }
+
+    public static boolean removeEvent(int eventId) {
+        try (Connection connection = MyConnection.getConnection();
+             Statement statement = connection.createStatement()) {
+    
+            // Drop the column from the 'registered' table
+            String dropRegisteredColumnSQL = "ALTER TABLE registered DROP COLUMN e_" + eventId;
+            statement.executeUpdate(dropRegisteredColumnSQL);
+    
+            // Drop the column from the 'feedback' table (if it exists)
+            String dropFeedbackColumnSQL = "ALTER TABLE feedback DROP COLUMN e_" + eventId;
+            statement.executeUpdate(dropFeedbackColumnSQL);
+    
+            // Delete the event row from the 'event' table
+            String deleteEventSQL = "DELETE FROM event WHERE e_id = " + eventId;
+            statement.executeUpdate(deleteEventSQL);
+    
+            return true;
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
     
 }
