@@ -159,4 +159,23 @@ public class DBManager {
         }
     }
 
+    public static boolean registerEvent(int eventId, int userId) {
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     "UPDATE registered SET e_" + eventId + " = 1 WHERE user_id = ?")) {
+    
+            statement.setInt(1, userId);
+    
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+
 }
