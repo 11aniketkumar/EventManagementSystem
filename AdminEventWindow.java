@@ -104,71 +104,92 @@ public class AdminEventWindow extends JFrame {
         JPanel eventSections = new JPanel();
         eventSections.setLayout(new GridLayout(0, 1));
         eventSections.setBackground(new Color(240, 240, 240)); // Light gray background
-    
+
         // Retrieve all events from the database using DBManager.getAllEvents()
-        List<EventObj> eventsList;
-        eventsList = DBManager.getAllEvents();
-    
+        List<EventObj> eventsList = DBManager.getAllEvents();
+
         // Add event sections dynamically
         for (EventObj event : eventsList) {
-            JPanel eventSection = createEventSection(
-                    event.getEventName(),
-                    event.getEventDate().toString(),
-                    event.getEventVenue(),
-                    event.getNumRegistrations() + "",
-                    event.getEventDescription()
-            );
+            JPanel eventSection = createEventSection(event);
             eventSections.add(eventSection);
         }
-    
+
         return eventSections;
     }
-    
-    private JPanel createEventSection(String eventName, String eventDate, String eventVenue, String numRegistrations, String eventDetails) {
+
+    private JPanel createEventSection(EventObj event) {
         JPanel eventSection = new JPanel();
         eventSection.setLayout(new BorderLayout());
         eventSection.setBackground(Color.WHITE);
         eventSection.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 171), 1)); // Purple border
-    
+
+        String eventName = event.getEventName();
+        String eventDate = event.getEventDate().toString();
+        String eventVenue = event.getEventVenue();
+        int numRegistrations = event.getNumRegistrations();
+        String eventDetails = event.getEventDescription();
+
         JLabel eventNameLabel = new JLabel(eventName);
         eventNameLabel.setFont(new Font("Arial", Font.BOLD, 24));
         eventNameLabel.setHorizontalAlignment(JLabel.LEFT);
-    
+
         JLabel eventDateLabel = new JLabel("Event Date: " + eventDate);
-        eventDateLabel.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font size to 16
+        eventDateLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         JLabel eventVenueLabel = new JLabel("Event Venue: " + eventVenue);
-        eventVenueLabel.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font size to 16
+        eventVenueLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         JLabel numRegistrationsLabel = new JLabel("No. of Registrations: " + numRegistrations);
-        numRegistrationsLabel.setFont(new Font("Arial", Font.PLAIN, 16)); // Set font size to 16
-    
+        numRegistrationsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+
         JTextArea eventDetailsTextArea = new JTextArea(eventDetails);
         eventDetailsTextArea.setFont(new Font("Arial", Font.PLAIN, 16));
         eventDetailsTextArea.setEditable(false);
-    
+
         JButton registerBtn = new JButton("Register");
         registerBtn.setFont(new Font("Arial", Font.BOLD, 20));
         registerBtn.setFocusPainted(false);
-    
+
+        // Check if the user is already registered for this event and disable the "Register" button
+        int eventId = event.getEventId();
+        int userId = userInfo.getId();
+        if (DBManager.isUserRegistered(eventId, userId)) {
+            registerBtn.setEnabled(false);
+        }
+
+        registerBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean isRegistered = DBManager.registerEvent(eventId, userId);
+        
+                if (isRegistered) {
+                    int newRegistrationCount = numRegistrations + 1;
+                    numRegistrationsLabel.setText("No. of Registrations: " + newRegistrationCount);
+                    registerBtn.setEnabled(false);
+                    JOptionPane.showMessageDialog(AdminEventWindow.this, "You have successfully registered for this event!");
+                } else {
+                    JOptionPane.showMessageDialog(AdminEventWindow.this, "Error occurred while registering for the event.");
+                }
+            }
+        });
+
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new GridLayout(4, 1));
         infoPanel.add(eventNameLabel);
         infoPanel.add(eventDateLabel);
         infoPanel.add(eventVenueLabel);
         infoPanel.add(numRegistrationsLabel);
-    
+
         JPanel eventInfoPanel = new JPanel();
         eventInfoPanel.setLayout(new BorderLayout());
         eventInfoPanel.add(infoPanel, BorderLayout.NORTH);
-    
+
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BorderLayout());
         bottomPanel.add(registerBtn, BorderLayout.SOUTH);
-    
-        // Add components to the eventSection panel
+
         eventSection.add(eventInfoPanel, BorderLayout.NORTH);
         eventSection.add(eventDetailsTextArea, BorderLayout.CENTER);
         eventSection.add(bottomPanel, BorderLayout.SOUTH);
-    
+
         return eventSection;
     }
     

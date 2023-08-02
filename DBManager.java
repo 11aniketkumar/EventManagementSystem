@@ -167,7 +167,20 @@ public class DBManager {
             statement.setInt(1, userId);
     
             int rowsAffected = statement.executeUpdate();
-            return rowsAffected > 0;
+    
+            if (rowsAffected > 0) {
+                // Update the registered count in the event table
+                int currentRegistrationCount = getEventRegistrationCount(eventId);
+                try (PreparedStatement updateStatement = connection.prepareStatement(
+                        "UPDATE event SET registered = ? WHERE e_id = ?")) {
+    
+                    updateStatement.setInt(1, currentRegistrationCount + 1);
+                    updateStatement.setInt(2, eventId);
+                    updateStatement.executeUpdate();
+                }
+    
+                return true;
+            }
     
         } catch (SQLException e) {
             e.printStackTrace();
@@ -178,4 +191,47 @@ public class DBManager {
     }
     
 
+    public static boolean isUserRegistered(int eventId, int userId) {
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     "SELECT e_" + eventId + " FROM registered WHERE user_id = ?")) {
+
+            statement.setInt(1, userId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int isRegistered = resultSet.getInt(1);
+                    return isRegistered == 1;
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public static int getEventRegistrationCount(int eventId) {
+        try (Connection connection = MyConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     "SELECT registered FROM event WHERE e_id = ?")) {
+    
+            statement.setInt(1, eventId);
+    
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("registered");
+                }
+            }
+    
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
 }
