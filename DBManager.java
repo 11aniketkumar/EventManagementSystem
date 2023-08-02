@@ -34,18 +34,42 @@ public class DBManager {
 
     public static boolean insertUser(String USN, String name, String username, String password, int accessLevel) {
         try (Connection connection = MyConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     "INSERT INTO user (USN, name, username, password, access_level) VALUES (?, ?, ?, ?, ?)")) {
-
-            statement.setString(1, USN);
-            statement.setString(2, name);
-            statement.setString(3, username);
-            statement.setString(4, password);
-            statement.setInt(5, accessLevel);
-
-            int rowsAffected = statement.executeUpdate();
-            return rowsAffected > 0;
-
+             PreparedStatement userStatement = connection.prepareStatement(
+                     "INSERT INTO user (USN, name, username, password, access_level) VALUES (?, ?, ?, ?, ?)",
+                     Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement registeredStatement = connection.prepareStatement(
+                     "INSERT INTO registered (user_id) VALUES (?)");
+             PreparedStatement feedbackStatement = connection.prepareStatement(
+                     "INSERT INTO feedback (user_id) VALUES (?)")) {
+    
+            userStatement.setString(1, USN);
+            userStatement.setString(2, name);
+            userStatement.setString(3, username);
+            userStatement.setString(4, password);
+            userStatement.setInt(5, accessLevel);
+    
+            // Insert the user into the "user" table
+            int rowsAffected = userStatement.executeUpdate();
+    
+            // Check if the user was inserted successfully
+            if (rowsAffected > 0) {
+                // Retrieve the generated user_id for the new user
+                ResultSet generatedKeys = userStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int userId = generatedKeys.getInt(1);
+    
+                    // Insert a row into the "registered" table
+                    registeredStatement.setInt(1, userId);
+                    registeredStatement.executeUpdate();
+    
+                    // Insert a row into the "feedback" table
+                    feedbackStatement.setInt(1, userId);
+                    feedbackStatement.executeUpdate();
+    
+                    return true;
+                }
+            }
+    
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -53,6 +77,7 @@ public class DBManager {
         }
         return false;
     }
+    
 
     public static List<EventObj> getAllEvents() {
         List<EventObj> eventsList = new ArrayList<>();
