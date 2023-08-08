@@ -91,18 +91,17 @@ public class RegisteredWindow extends JFrame {
         JPanel eventSections = new JPanel();
         eventSections.setLayout(new GridLayout(0, 1));
         eventSections.setBackground(new Color(240, 240, 240)); // Light gray background
-
-        // Retrieve registered events for the current user
+    
         List<EventObj> registeredEventsList = DBManager.getRegisteredEvents(userInfo.getId());
-
-        // Add event sections dynamically
+    
         for (EventObj event : registeredEventsList) {
             JPanel eventSection = createEventSection(event);
             eventSections.add(eventSection);
         }
-
+    
         return eventSections;
     }
+    
 
     private JPanel createEventSection(EventObj event) {
         JPanel eventSection = new JPanel();

@@ -261,7 +261,7 @@ public class DBManager {
     
         return eventsList;
     }
-    
+
 
     public static boolean unregisterEvent(int eventId, int userId) {
         try (Connection connection = MyConnection.getConnection();
